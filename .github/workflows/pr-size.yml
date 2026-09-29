@@ -1,0 +1,19 @@
+name: pr-size
+on:
+  pull_request:
+
+jobs:
+  size:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comprobar tamaño del diff
+        env:
+          ADDITIONS: ${{ github.event.pull_request.additions }}
+          DELETIONS: ${{ github.event.pull_request.deletions }}
+        run: |
+          TOTAL=$((ADDITIONS + DELETIONS))
+          echo "Diff: +$ADDITIONS -$DELETIONS = $TOTAL líneas"
+          if [ "$TOTAL" -gt 400 ]; then
+            echo "::error::El PR supera las 400 líneas ($TOTAL). Divídelo."
+            exit 1
+          fi
